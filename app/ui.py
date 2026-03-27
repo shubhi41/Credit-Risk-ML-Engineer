@@ -52,7 +52,7 @@ if st.button("Predict Risk"):
               
         }
 
-        response=requests.post("http://127.0.0.1:8000/predict",json=data)
+        response=requests.post("https://credit-risk-level.onrender.com/predict",json=data, timeout=10)
 
         st.write("Status Code:",response.status_code)
         st.write("Raw Response",response.text)

@@ -4,15 +4,15 @@ import pandas as pd
 import numpy as np
 
 #Load model & pipeline
-with open ("models/model.pkl", "rb") as f:
-    model=pickle.load(f)
+# with open ("models/model.pkl", "rb") as f:
+    # model=pickle.load(f)
 
 with open ("models/pipeline.pkl", "rb") as f:
     pipeline=pickle.load(f)
 
 #Initialize app
 app=FastAPI()
-
+    
 @app.get("/")
 def home():
     return {"message": "Credit Risk API is running"}
@@ -41,9 +41,19 @@ def predict(data:dict):
     print(df.dtypes)
     #Apply pipeline
     try:
-        processed=pipeline.transform(df)
-        prediction=model.predict(processed)
-        return {"risk_prediction": int(prediction[0])}
+        # processed=pipeline.transform(df)
+        prediction=pipeline.predict(df)[0]
+
+        if hasattr(pipeline,"predict_proba"):
+            proba=pipeline.predict_proba(df)[0][1]
+        else:
+            proba=0.0
+                    
+
+        return {
+            "risk_prediction": int(prediction),
+            "probability":float(proba)
+            }
     except Exception as e:
         print("Error:",e)
         return {"error": str(e)}

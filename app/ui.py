@@ -1,14 +1,19 @@
 import streamlit as st
 import requests
 
+st.set_page_config(page_title="Credit Risk Predictor", page_icon="💳")
 st.title("Credit Risk Predictor")
+st.markdown("Enter customer details below:")
 
 #Input Fields
-age=st.number_input("Age", 18, 100)
-job=st.selectbox("Job",[0,1,2,3])
-housing=st.selectbox("Housing",["own","rent","free"])
-credit_amount=st.number_input("Credit Amount")
-duration=st.number_input("Duration")
+col1,col2=st.columns(2)
+with col1:
+    age=st.number_input("Age", 18, 100)
+    job=st.selectbox("Job",[0,1,2,3])
+    housing=st.selectbox("Housing",["own","rent","free"])
+with col2:
+    credit_amount=st.number_input("Credit Amount")
+    duration=st.number_input("Duration")
 
 sex = st.selectbox("Sex", ["male", "female"])
 saving = st.selectbox("Saving accounts", ["little", "moderate", "rich"])
@@ -51,14 +56,22 @@ if st.button("Predict Risk"):
                 "Purpose": str(purpose),
               
         }
-
-        response=requests.post("https://credit-risk-level.onrender.com/predict",json=data, timeout=10)
+        
+        # requests.get("https://credit-risk-level.onrender.com", timeout=10)  
+        response=requests.post("https://credit-risk-level.onrender.com/predict",json=data, timeout=120)
 
         st.write("Status Code:",response.status_code)
-        st.write("Raw Response",response.text)
+        st.write("Raw Response",response.json())
         if response.status_code==200:
             result=response.json()
-            st.success(f"Prediction:{result}")
+            if "error" in result:
+                st.error(f"API Error: {result['error']}")
+            else:
+                risk="High Risk" if result["risk_prediction"]==1 else "Low risk"
+                confidence=round(result["probability"]*100,2)
+
+                st.success(f"Prediction:{result}")
+                st.success(f"Confidence:{confidence}%")
         else:
             st.error("API Error")
 

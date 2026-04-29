@@ -7,7 +7,7 @@ An end-to-end Machine Learning project that predicts whether a customer is **Hig
 
 #### Live Demo
 - API (Swagger UI): https://credit-risk-level.onrender.com/docs  
-- Demo Video: (add your link if available)
+
 
 ---
 
